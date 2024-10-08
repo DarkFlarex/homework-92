@@ -23,7 +23,7 @@ const run = async () => {
     password: '123',
     displayName: 'User',
   });
-  user1.generateToken();
+  user2.generateToken();
 
   await user1.save();
 
