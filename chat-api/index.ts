@@ -47,6 +47,10 @@ router.ws('/chatWs', (ws, req) => {
         }
         username = user.displayName;
         connectedClients.push({ ws, username });
+
+        const messages = await Message.find().sort({ datetime: -1 }).limit(30);
+        messages.reverse();
+        ws.send(JSON.stringify({ type: 'LOAD_MESSAGES', payload: messages.reverse() }));
       }
 
       if (decodedMessage.type === 'SEND_MESSAGE') {
