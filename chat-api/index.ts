@@ -47,6 +47,7 @@ router.ws('/chatWs', (ws, req) => {
         }
         username = user.displayName;
         connectedClients.push({ ws, username });
+        onlineUser();
 
         const messages = await Message.find().sort({ datetime: -1 }).limit(30);
         messages.reverse();
@@ -82,8 +83,19 @@ router.ws('/chatWs', (ws, req) => {
     const index = connectedClients.findIndex(client => client.ws === ws);
     if (index !== -1) {
       connectedClients.splice(index, 1);
+      onlineUser();
     }
   });
+
+  const onlineUser = () => {
+    const users = connectedClients.map(client => client.username);
+    connectedClients.forEach((client) => {
+      client.ws.send(JSON.stringify({
+        type: 'UPDATE_USERS',
+        payload: users,
+      }));
+    });
+  };
 });
 
 app.use(router);
